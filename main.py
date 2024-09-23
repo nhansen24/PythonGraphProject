@@ -3,10 +3,12 @@ from math import sqrt, inf
 # from random import randint, randrange
 from heapq import heappush, heappop
 # from Graph import Graph, ManhattanGraph
-# Project for program suggestions: could be books, movies, locations, mapping/navigation, etc...
-# Consider implementing graph, A*, Dijkstras, etc... for practice with vertex and weights
-# First thoughts, it would be interesting to create an euclidian graph for navigating Seattle?
-# little brick stores / local stores maybe??
+
+# Consider implementing graph, A*, Dijkstras, etc... for practice with vertices and edge weights
+# Initial thoughts, it would be interesting to create an euclidian graph for navigating Seattle?
+# STATUS working partially, only connects two closest neighbors during build_graph() which creates a
+# disconnected graph between areas like West Seattle and Downtown. Revise to connect to closest neighbor in
+# each cardinal direction within a range or by selectively connecting certain vertices...
 
 
 def heuristic(a, b, points):
@@ -74,8 +76,8 @@ def build_graph():
                 distances.append((id2, distance))
         distances.sort(key=lambda i: i[1])
         # Every vertex is a key = [(neighbor, distance), (neighbor2, distance2)]
-        seattle_graph[id1] = distances[:2]
-    # 69 - Test that prints every node and the two closest neighbors & their distance. TEST SORT
+        seattle_graph[id1] = distances[:2]          # THIS NEEDS TO BE MODIFIED TO BETTER CONNECT THE GRAPH
+    # Test that prints every node and the two closest neighbors & their distance. TEST SORT
     '''
     for node, edges in seattle_graph.items():
         print(f'\n{node}: ')
@@ -85,28 +87,36 @@ def build_graph():
     return seattle_graph, points
 
 
+# Initialize the graph from the CSV
 seattle_graph1, points1 = build_graph()
 
 
+# Prints available start and target locations. Seperated by ' // '
 def get_locations():
     sorted_locations = sorted(seattle_graph1.keys(), key=lambda i: i[0])
     for name in sorted_locations:
         print(f'{name}', end=' // ')
 
 
+# Starts the program off with an intro and query the user for start and target locations
 def welcome():
     print('\n\nWelcome to Seattle')
     input('\nPress enter to continue')
     print('\nHere is a list of popular locations:\n')
+    # Prints possible inputs for locations
     get_locations()
     start_location = input('\n\nWhat is your starting location? ')
     target_location = input('\nWhere would you like to go? ')
+    # Submits the user inputs as arguments into a_star() for finding en-route attractions
+    # Passes in points1 (x,y) returned by build_graph() for use in a_star() heuristic function.
     path = a_star(seattle_graph1, start_location, target_location, points1)
     return start_location, target_location
 
 
+# Calls the start function.
 start_location1, target_location1 = welcome()
 
+# Loop for checking additional routes
 again = input('\nWould you like to visit another location? (y/n) ')
 while again == 'y':
     start_location2, target_location2 = welcome()
