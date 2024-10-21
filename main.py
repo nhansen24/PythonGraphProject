@@ -40,7 +40,7 @@ def a_star(graph, start, target, points):
                 heappush(vertices_to_visit, (new_distance, neighbor))
                 count += 1
     # OR clause prevents listing start or target as the attractions between
-    if path_distances[target][0] == inf or len(path_distances[target][1]) < 3:
+    if path_distances[target][0] == inf or len(path_distances[target][1]) < 2:
         print(f'No Attractions found between {start} and {target}')
         return []
 
@@ -48,7 +48,7 @@ def a_star(graph, start, target, points):
     route = []
     for path1 in path_distances[target][1]:
         route.append(path1)
-    for i in range(1, len(route) - 2):
+    for i in range(1, len(route) - 1):
         print(f'{route[i]}', end='    ')
 
     return path_distances[target][1]
@@ -69,21 +69,45 @@ def build_graph():
 
     for id1, (x1, y1) in points.items():
         seattle_graph[id1] = []
-        distances = []
+        distances_ne = []
+        distances_nw = []
+        distances_sw = []
+        distances_se = []
+
         for id2, (x2, y2) in points.items():
-            if id1 != id2:
-                distance = sqrt((x2 - x1)**2 + (y2 - y1)**2) * 69
-                distances.append((id2, distance))
-        distances.sort(key=lambda i: i[1])
+            if id1 == id2:
+                continue
+            distance = sqrt((x2 - x1)**2 + (y2 - y1)**2) * 69
+            if distance > 8:
+                continue
+
+            if x1 >= x2 and y1 >= y2:
+                distances_ne.append((id2, distance))
+
+            if x1 <= x2 and y1 >= y2:
+                distances_nw.append((id2, distance))
+
+            if x1 <= x2 and y1 <= y2:
+                distances_sw.append((id2, distance))
+
+            if x1 >= x2 and y1 <= y2:
+                distances_se.append((id2, distance))
+
+            else:
+                continue
+
+        distances_ne.sort(key=lambda i: i[1])
+        distances_nw.sort(key=lambda i: i[1])
+        distances_sw.sort(key=lambda i: i[1])
+        distances_se.sort(key=lambda i: i[1])
         # Every vertex is a key = [(neighbor, distance), (neighbor2, distance2)]
-        seattle_graph[id1] = distances[:2]          # THIS NEEDS TO BE MODIFIED TO BETTER CONNECT THE GRAPH
-    # Test that prints every node and the two closest neighbors & their distance. TEST SORT
-    '''
-    for node, edges in seattle_graph.items():
+        seattle_graph[id1] = distances_ne[:1] + distances_nw[:1] + distances_sw[:1] + distances_se[:1]
+    """
+    for node, edges in seattle_graph.items():       # Prints node and Neighbors
         print(f'\n{node}: ')
         for edge in edges:
             print(f'    {edge[0]}: {edge[1]:.2f} miles')
-    '''
+    """
     return seattle_graph, points
 
 
