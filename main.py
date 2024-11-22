@@ -1,8 +1,10 @@
 import csv
 from math import sqrt, inf
+# import pandas as pd
 # from random import randint, randrange
 from heapq import heappush, heappop
 # from Graph import Graph, ManhattanGraph
+
 
 # Consider implementing graph, A*, Dijkstras, etc... for practice with vertices and edge weights
 # Initial thoughts, it would be interesting to create an euclidian graph for navigating Seattle?
